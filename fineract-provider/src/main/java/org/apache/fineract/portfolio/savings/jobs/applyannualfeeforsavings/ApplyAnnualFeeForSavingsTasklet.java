@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
+import org.apache.fineract.infrastructure.core.service.StringUtil;
 import org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountAnnualFeeData;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountChargeReadPlatformService;
@@ -51,10 +52,11 @@ public class ApplyAnnualFeeForSavingsTasklet implements Tasklet {
             } catch (final PlatformApiDataValidationException e) {
                 final List<ApiParameterError> errors = e.getErrors();
                 for (final ApiParameterError error : errors) {
-                    log.error("Apply annual fee failed for account: {} with message {}", savingsAccountReference.getAccountNo(), error);
+                    log.error("Apply annual fee failed for account: {} with message {}",
+                            StringUtil.maskValue(savingsAccountReference.getAccountNo()), error);
                 }
             } catch (final Exception ex) {
-                log.error("Apply annual fee failed for account: {}", savingsAccountReference.getAccountNo(), ex);
+                log.error("Apply annual fee failed for account: {}", StringUtil.maskValue(savingsAccountReference.getAccountNo()), ex);
             }
         }
 

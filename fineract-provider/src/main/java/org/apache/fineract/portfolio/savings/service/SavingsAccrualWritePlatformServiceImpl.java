@@ -33,6 +33,7 @@ import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDoma
 import org.apache.fineract.infrastructure.core.domain.LocalDateInterval;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.core.service.MathUtil;
+import org.apache.fineract.infrastructure.core.service.StringUtil;
 import org.apache.fineract.infrastructure.jobs.exception.JobExecutionException;
 import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
 import org.apache.fineract.organisation.monetary.domain.Money;
@@ -88,11 +89,13 @@ public class SavingsAccrualWritePlatformServiceImpl implements SavingsAccrualWri
                 if (fromDate == null) {
                     fromDate = savingsAccount.getActivationDate();
                 }
-                log.debug("Processing savings account {} from date {} till date {}", savingsAccrual.getAccountNo(), fromDate, tillDate);
+                log.debug("Processing savings account {} from date {} till date {}", StringUtil.maskValue(savingsAccrual.getAccountNo()),
+                        fromDate, tillDate);
                 addAccrualTransactions(savingsAccount, fromDate, tillDate, financialYearBeginningMonth,
                         isSavingsInterestPostingAtCurrentPeriodEnd, mc, null);
             } catch (Exception e) {
-                log.error("Failed to add accrual transaction for savings {} : {}", savingsAccrual.getAccountNo(), e.getMessage());
+                log.error("Failed to add accrual transaction for savings {} : {}", StringUtil.maskValue(savingsAccrual.getAccountNo()),
+                        e.getMessage());
                 errors.add(e.getCause());
             }
         }

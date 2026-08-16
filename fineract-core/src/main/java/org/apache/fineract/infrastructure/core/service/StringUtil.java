@@ -27,7 +27,10 @@ public final class StringUtil {
     }
 
     public static String maskValue(String value, Integer unmaskedLength) {
-        if (value.length() <= unmaskedLength) {
+        if (value == null) {
+            return null;
+        }
+        if (value.length() <= unmaskedLength + 1) {
             return "****";
         }
         return value.substring(0, 1) + "*".repeat(value.length() - 1 - unmaskedLength) + value.substring(value.length() - unmaskedLength);

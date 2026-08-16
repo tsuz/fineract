@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.infrastructure.core.domain.ActionContext;
 import org.apache.fineract.infrastructure.core.domain.ExternalId;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
+import org.apache.fineract.infrastructure.core.service.StringUtil;
 import org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil;
 import org.apache.fineract.infrastructure.event.business.domain.loan.LoanAccountCustomSnapshotBusinessEvent;
 import org.apache.fineract.infrastructure.event.business.service.BusinessEventNotifierService;
@@ -56,7 +57,7 @@ public class CheckDueInstallmentsBusinessStep implements LoanCOBBusinessStep {
             public void run() {
                 try {
                     log.debug("Starting custom snapshot event processing for loan with id [{}], account number [{}], external Id [{}].",
-                            loan.getId(), loan.getAccountNumber(), externalId);
+                            loan.getId(), StringUtil.maskValue(loan.getAccountNumber()), externalId);
 
                     if (loan.getRepaymentScheduleInstallments() != null && loan.getRepaymentScheduleInstallments().size() > 0) {
                         final LocalDate currentDate = DateUtils.getBusinessLocalDate();
@@ -79,7 +80,7 @@ public class CheckDueInstallmentsBusinessStep implements LoanCOBBusinessStep {
                 } catch (RuntimeException re) {
                     log.error(
                             "Received [{}] exception while processing custom snapshot event for loan with Id [{}], account number [{}], external Id [{}].",
-                            re.getMessage(), loan.getId(), loan.getAccountNumber(), externalId, re);
+                            re.getMessage(), loan.getId(), StringUtil.maskValue(loan.getAccountNumber()), externalId, re);
 
                     throw re;
                 } finally {
@@ -89,7 +90,7 @@ public class CheckDueInstallmentsBusinessStep implements LoanCOBBusinessStep {
             }
         }, duration -> log.debug(
                 "Ending custom snapshot event processing for loan with Id [{}], account number [{}], external Id [{}], finished in [{}]ms.",
-                loan.getId(), loan.getAccountNumber(), externalId, duration.toMillis()));
+                loan.getId(), StringUtil.maskValue(loan.getAccountNumber()), externalId, duration.toMillis()));
 
         return loan;
     }

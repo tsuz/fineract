@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.infrastructure.core.config.FineractProperties;
+import org.apache.fineract.infrastructure.core.service.StringUtil;
 import org.apache.fineract.infrastructure.security.exception.OidcUserNotFoundException;
 import org.apache.fineract.organisation.office.domain.Office;
 import org.apache.fineract.organisation.office.domain.OfficeRepository;
@@ -68,7 +69,7 @@ public class OidcAppUserResolutionServiceImpl implements OidcAppUserResolutionSe
         if (email != null) {
             user = appUserRepository.findActiveUserByEmail(email);
             if (user != null) {
-                log.debug("OIDC user resolved by email: '{}'", email);
+                log.debug("OIDC user resolved by email: '{}'", StringUtil.maskValue(email));
                 return user;
             }
         }

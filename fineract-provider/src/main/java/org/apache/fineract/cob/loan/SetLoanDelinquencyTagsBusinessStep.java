@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.infrastructure.core.domain.ActionContext;
 import org.apache.fineract.infrastructure.core.domain.ExternalId;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
+import org.apache.fineract.infrastructure.core.service.StringUtil;
 import org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil;
 import org.apache.fineract.infrastructure.event.business.domain.loan.LoanDelinquencyRangeChangeBusinessEvent;
 import org.apache.fineract.infrastructure.event.business.service.BusinessEventNotifierService;
@@ -65,7 +66,7 @@ public class SetLoanDelinquencyTagsBusinessStep implements LoanCOBBusinessStep {
             public void run() {
                 try {
                     log.debug("Starting delinquency tag processing for loan with Id [{}], account number [{}], external Id [{}]",
-                            loan.getId(), loan.getAccountNumber(), externalId);
+                            loan.getId(), StringUtil.maskValue(loan.getAccountNumber()), externalId);
 
                     // Change the Action Context to DEFAULT for Business Date so that we can compare the loan due date
                     // to
@@ -86,7 +87,7 @@ public class SetLoanDelinquencyTagsBusinessStep implements LoanCOBBusinessStep {
                 } catch (RuntimeException re) {
                     log.error(
                             "Received [{}] exception while processing delinquency tag for loan with Id [{}], account number [{}], external Id [{}]",
-                            re.getMessage(), loan.getId(), loan.getAccountNumber(), externalId, re);
+                            re.getMessage(), loan.getId(), StringUtil.maskValue(loan.getAccountNumber()), externalId, re);
 
                     throw re;
                 } finally {
@@ -96,7 +97,7 @@ public class SetLoanDelinquencyTagsBusinessStep implements LoanCOBBusinessStep {
             }
         }, duration -> {
             log.debug("Ending delinquency tag processing for loan with Id [{}], account number [{}], external Id [{}], finished in [{}]ms",
-                    loan.getId(), loan.getAccountNumber(), externalId, duration.toMillis());
+                    loan.getId(), StringUtil.maskValue(loan.getAccountNumber()), externalId, duration.toMillis());
         });
 
         return loan;
