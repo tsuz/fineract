@@ -53,7 +53,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
         }
 
         if (!user.isPasswordResetAllowed()) {
-            log.debug("Password reset is disabled for user: {}", user.getUsername());
+            log.debug("Password reset is disabled for user: {}", StringUtil.maskValue(user.getUsername()));
             return;
         }
 
@@ -69,6 +69,6 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
         this.emailService.sendForgotPasswordEmail(organisationName, contactName, email, user.getUsername(), temporaryPassword);
 
-        log.info("Password reset email sent to user: {}", user.getUsername());
+        log.info("Password reset email sent to user: {}", StringUtil.maskValue(user.getUsername()));
     }
 }
