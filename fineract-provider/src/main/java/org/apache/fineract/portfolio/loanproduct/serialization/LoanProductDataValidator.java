@@ -58,6 +58,7 @@ import org.apache.fineract.portfolio.loanaccount.domain.LoanCapitalizedIncomeCal
 import org.apache.fineract.portfolio.loanaccount.domain.LoanCapitalizedIncomeStrategy;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanCapitalizedIncomeType;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanChargeOffBehaviour;
+import org.apache.fineract.portfolio.loanaccount.domain.LoanEarlyRepaymentFeeCalculationType;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanRepaymentScheduleTransactionProcessorFactory;
 import org.apache.fineract.portfolio.loanaccount.domain.transactionprocessor.impl.AdvancedPaymentScheduleTransactionProcessor;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.LoanScheduleProcessingType;
@@ -209,7 +210,9 @@ public final class LoanProductDataValidator {
             LoanProductConstants.MERCHANT_BUY_DOWN_FEE_PARAM_NAME,
             LoanProductAccountingParams.CAPITALIZED_INCOME_CLASSIFICATION_TO_INCOME_ACCOUNT_MAPPINGS.getValue(), //
             LoanProductAccountingParams.BUYDOWN_FEE_CLASSIFICATION_TO_INCOME_ACCOUNT_MAPPINGS.getValue(), //
-            LoanProductConstants.ALLOW_FULL_TERM_FOR_TRANCHE_PARAM_NAME //
+            LoanProductConstants.ALLOW_FULL_TERM_FOR_TRANCHE_PARAM_NAME, //
+            LoanProductConstants.ENABLE_EARLY_REPAYMENT_FEE_PARAM_NAME,
+            LoanProductConstants.EARLY_REPAYMENT_FEE_CALCULATION_TYPE_PARAM_NAME, LoanProductConstants.EARLY_REPAYMENT_FEE_AMOUNT_PARAM_NAME //
     ));
 
     private static final String[] SUPPORTED_LOAN_CONFIGURABLE_ATTRIBUTES = { LoanProductConstants.amortizationTypeParamName,
@@ -908,6 +911,8 @@ public final class LoanProductDataValidator {
         validateIncomeCapitalization(transactionProcessingStrategyCode, element, baseDataValidator, accountingRuleType);
 
         validateBuyDownFee(transactionProcessingStrategyCode, element, baseDataValidator, accountingRuleType);
+
+        validateEarlyRepaymentFee(element, baseDataValidator);
 
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
     }
@@ -2032,6 +2037,8 @@ public final class LoanProductDataValidator {
 
         validateBuyDownFee(transactionProcessingStrategyCode, element, baseDataValidator, accountingRuleType);
 
+        validateEarlyRepaymentFee(element, baseDataValidator);
+
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
     }
 
@@ -3008,6 +3015,43 @@ public final class LoanProductDataValidator {
             if (Boolean.TRUE.equals(enableBuyDownFee)) {
                 baseDataValidator.reset().parameter(LoanProductConstants.ENABLE_BUY_DOWN_FEE_PARAM_NAME).failWithCode(
                         "supported.only.for.progressive.loan.buyDownFee", "Buy down fee is only supported for Progressive loans");
+            }
+        }
+    }
+
+    private void validateEarlyRepaymentFee(JsonElement element, DataValidatorBuilder baseDataValidator) {
+        if (this.fromApiJsonHelper.parameterExists(LoanProductConstants.EARLY_REPAYMENT_FEE_CALCULATION_TYPE_PARAM_NAME, element)) {
+            final String earlyRepaymentFeeCalculationType = this.fromApiJsonHelper
+                    .extractStringNamed(LoanProductConstants.EARLY_REPAYMENT_FEE_CALCULATION_TYPE_PARAM_NAME, element);
+            baseDataValidator.reset().parameter(LoanProductConstants.EARLY_REPAYMENT_FEE_CALCULATION_TYPE_PARAM_NAME)
+                    .value(earlyRepaymentFeeCalculationType).isOneOfEnumValues(LoanEarlyRepaymentFeeCalculationType.class);
+        }
+
+        if (this.fromApiJsonHelper.parameterExists(LoanProductConstants.ENABLE_EARLY_REPAYMENT_FEE_PARAM_NAME, element)) {
+            final Boolean enableEarlyRepaymentFee = this.fromApiJsonHelper
+                    .extractBooleanNamed(LoanProductConstants.ENABLE_EARLY_REPAYMENT_FEE_PARAM_NAME, element);
+            baseDataValidator.reset().parameter(LoanProductConstants.ENABLE_EARLY_REPAYMENT_FEE_PARAM_NAME).value(enableEarlyRepaymentFee)
+                    .ignoreIfNull().validateForBooleanValue();
+
+            if (Boolean.TRUE.equals(enableEarlyRepaymentFee)) {
+                final String earlyRepaymentFeeCalculationType = this.fromApiJsonHelper
+                        .extractStringNamed(LoanProductConstants.EARLY_REPAYMENT_FEE_CALCULATION_TYPE_PARAM_NAME, element);
+                baseDataValidator.reset().parameter(LoanProductConstants.EARLY_REPAYMENT_FEE_CALCULATION_TYPE_PARAM_NAME)
+                        .value(earlyRepaymentFeeCalculationType).isOneOfEnumValues(LoanEarlyRepaymentFeeCalculationType.class)
+                        .cantBeBlankWhenParameterProvidedIs(LoanProductConstants.ENABLE_EARLY_REPAYMENT_FEE_PARAM_NAME, true);
+
+                final BigDecimal earlyRepaymentFeeAmount = this.fromApiJsonHelper
+                        .extractBigDecimalWithLocaleNamed(LoanProductConstants.EARLY_REPAYMENT_FEE_AMOUNT_PARAM_NAME, element);
+                baseDataValidator.reset().parameter(LoanProductConstants.EARLY_REPAYMENT_FEE_AMOUNT_PARAM_NAME)
+                        .value(earlyRepaymentFeeAmount)
+                        .cantBeBlankWhenParameterProvidedIs(LoanProductConstants.ENABLE_EARLY_REPAYMENT_FEE_PARAM_NAME, true)
+                        .positiveAmount();
+
+                if (earlyRepaymentFeeAmount != null && LoanEarlyRepaymentFeeCalculationType.PERCENT_OF_OUTSTANDING_PRINCIPAL.name()
+                        .equals(earlyRepaymentFeeCalculationType)) {
+                    baseDataValidator.reset().parameter(LoanProductConstants.EARLY_REPAYMENT_FEE_AMOUNT_PARAM_NAME)
+                            .value(earlyRepaymentFeeAmount).notGreaterThanMax(BigDecimal.valueOf(100));
+                }
             }
         }
     }
