@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
+import org.apache.fineract.infrastructure.core.service.StringUtil;
 import org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil;
 import org.apache.fineract.portfolio.savings.DepositAccountType;
 import org.apache.fineract.portfolio.savings.data.DepositAccountData;
@@ -53,11 +54,11 @@ public class UpdateDepositsAccountMaturityDetailsTasklet implements Tasklet {
             } catch (final PlatformApiDataValidationException e) {
                 final List<ApiParameterError> errors = e.getErrors();
                 for (final ApiParameterError error : errors) {
-                    log.error("Update maturity details failed for account: {} with message {}", depositAccount.getAccountNo(),
-                            error.getDeveloperMessage());
+                    log.error("Update maturity details failed for account: {} with message {}",
+                            StringUtil.maskValue(depositAccount.getAccountNo()), error.getDeveloperMessage());
                 }
             } catch (final Exception ex) {
-                log.error("Update maturity details failed for account: {}", depositAccount.getAccountNo(), ex);
+                log.error("Update maturity details failed for account: {}", StringUtil.maskValue(depositAccount.getAccountNo()), ex);
             }
         }
 

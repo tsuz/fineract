@@ -70,6 +70,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.fineract.infrastructure.core.service.StringUtil;
 import org.apache.fineract.infrastructure.gcm.GcmConstants;
 import org.apache.fineract.infrastructure.gcm.exception.InvalidRequestException;
 import org.slf4j.Logger;
@@ -180,7 +181,7 @@ public class Sender {
         do {
             attempt++;
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Attempt #{} to send message {} to regIds {}", attempt, message, to);
+                LOG.debug("Attempt #{} to send message to regId {}", attempt, StringUtil.maskValue(to));
             }
             result = sendNoRetry(message, to);
             tryAgain = result == null && attempt <= retries;
@@ -270,7 +271,7 @@ public class Sender {
                     String error = jsonResponse.get(JSON_ERROR).getAsString();
                     resultBuilder.errorCode(error);
                 } else {
-                    LOG.warn("Expected {} or {} found: {}", JSON_MESSAGE_ID, JSON_ERROR, responseBody);
+                    LOG.warn("Expected {} or {} but response (status {}) contained neither", JSON_MESSAGE_ID, JSON_ERROR, status);
                     return null;
                 }
             } else if (jsonResponse.has(JSON_SUCCESS) && jsonResponse.has(JSON_FAILURE)) {
@@ -288,7 +289,7 @@ public class Sender {
                 }
                 resultBuilder.success(success).failure(failure).failedRegistrationIds(failedIds);
             } else {
-                LOG.warn("Unrecognized response: {}", responseBody);
+                LOG.warn("Unrecognized response with status {}", status);
                 throw newIoException(responseBody, new Exception("Unrecognized response."));
             }
             return resultBuilder.build();
@@ -337,7 +338,7 @@ public class Sender {
             multicastResult = null;
             attempt++;
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Attempt #{} to send message {} to regIds {}", attempt, message, unsentRegIds);
+                LOG.debug("Attempt #{} to send message to {} regIds", attempt, unsentRegIds.size());
             }
             try {
                 multicastResult = sendNoRetry(message, unsentRegIds);
@@ -482,7 +483,7 @@ public class Sender {
 
     private Map<String, Object> makeGcmHttpRequest(Map<Object, Object> jsonRequest) throws InvalidRequestException {
         String requestBody = new Gson().toJson(jsonRequest);
-        LOG.debug("JSON request: " + requestBody);
+        LOG.debug("Sending GCM push request");
         HttpURLConnection conn;
         int status;
         try {
@@ -496,7 +497,7 @@ public class Sender {
         if (status != 200) {
             try {
                 responseBody = getAndClose(conn.getErrorStream());
-                LOG.debug("JSON error response: {}", responseBody);
+                LOG.debug("GCM request failed with status {}", status);
             } catch (IOException e) {
                 // ignore the exception since it will thrown an
                 // InvalidRequestException
@@ -512,7 +513,7 @@ public class Sender {
             LOG.warn("IOException reading response", e);
             return null;
         }
-        LOG.debug("JSON response: {}", responseBody);
+        LOG.debug("Received GCM response with status {}", status);
         Map<String, Object> map = new HashMap<>();
         map.put("responseBody", responseBody);
         map.put("status", status);
@@ -647,7 +648,6 @@ public class Sender {
             LOG.warn("URL does not use https: {}", url);
         }
         LOG.debug("Sending POST to {}", url);
-        LOG.debug("POST body: {}", body);
         byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
         HttpURLConnection conn = getConnection(url);
         conn.setDoOutput(true);

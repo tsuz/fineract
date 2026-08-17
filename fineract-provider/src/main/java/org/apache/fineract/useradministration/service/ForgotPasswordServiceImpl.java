@@ -23,6 +23,7 @@ import java.time.ZoneOffset;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.infrastructure.core.service.PlatformEmailService;
+import org.apache.fineract.infrastructure.core.service.StringUtil;
 import org.apache.fineract.infrastructure.security.service.RandomPasswordGenerator;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.apache.fineract.useradministration.domain.AppUserRepository;
@@ -47,12 +48,12 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     public void requestPasswordReset(final String email) {
         final AppUser user = this.appUserRepository.findActiveUserByEmail(email);
         if (user == null) {
-            log.debug("Password reset requested for non-existent or inactive email: {}", email);
+            log.debug("Password reset requested for non-existent or inactive email: {}", StringUtil.maskValue(email));
             return;
         }
 
         if (!user.isPasswordResetAllowed()) {
-            log.debug("Password reset is disabled for user: {}", user.getUsername());
+            log.debug("Password reset is disabled for user: {}", StringUtil.maskValue(user.getUsername()));
             return;
         }
 
@@ -68,6 +69,6 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
         this.emailService.sendForgotPasswordEmail(organisationName, contactName, email, user.getUsername(), temporaryPassword);
 
-        log.info("Password reset email sent to user: {}", user.getUsername());
+        log.info("Password reset email sent to user: {}", StringUtil.maskValue(user.getUsername()));
     }
 }

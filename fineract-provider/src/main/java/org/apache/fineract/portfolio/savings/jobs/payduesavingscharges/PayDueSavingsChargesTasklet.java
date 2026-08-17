@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
+import org.apache.fineract.infrastructure.core.service.StringUtil;
 import org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil;
 import org.apache.fineract.infrastructure.jobs.exception.JobExecutionException;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountAnnualFeeData;
@@ -54,11 +55,12 @@ public class PayDueSavingsChargesTasklet implements Tasklet {
                 final List<ApiParameterError> errors = e.getErrors();
                 for (final ApiParameterError error : errors) {
                     log.error("Apply Charges due for savings failed for account {} with message: {}",
-                            savingsAccountReference.getAccountNo(), error.getDeveloperMessage(), e);
+                            StringUtil.maskValue(savingsAccountReference.getAccountNo()), error.getDeveloperMessage(), e);
                 }
             } catch (final Exception ex) {
                 exceptions.add(ex);
-                log.error("Apply Charges due for savings failed for account: {}", savingsAccountReference.getAccountNo(), ex);
+                log.error("Apply Charges due for savings failed for account: {}",
+                        StringUtil.maskValue(savingsAccountReference.getAccountNo()), ex);
             }
         }
         log.debug("{}: Records affected by applyDueChargesForSavings: {}", ThreadLocalContextUtil.getTenant().getName(),

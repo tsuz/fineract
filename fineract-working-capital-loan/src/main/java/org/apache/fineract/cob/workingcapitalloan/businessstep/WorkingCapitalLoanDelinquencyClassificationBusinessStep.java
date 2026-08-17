@@ -25,6 +25,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.infrastructure.core.domain.ExternalId;
+import org.apache.fineract.infrastructure.core.service.StringUtil;
 import org.apache.fineract.infrastructure.core.service.ThreadLocalContextUtil;
 import org.apache.fineract.portfolio.workingcapitalloan.domain.WorkingCapitalLoan;
 import org.apache.fineract.portfolio.workingcapitalloan.service.WorkingCapitalLoanDelinquencyClassificationService;
@@ -47,7 +48,7 @@ public class WorkingCapitalLoanDelinquencyClassificationBusinessStep extends Wor
         measure(() -> setDelinquencyBucketTags(loan, externalId), duration -> {
             log.debug(
                     "Ending Working Capital delinquency tag processing for loan with Id [{}], account number [{}], external Id [{}], finished in [{}]ms",
-                    loan.getId(), loan.getAccountNumber(), externalId, duration.toMillis());
+                    loan.getId(), StringUtil.maskValue(loan.getAccountNumber()), externalId, duration.toMillis());
         });
         return loan;
     }
@@ -56,13 +57,13 @@ public class WorkingCapitalLoanDelinquencyClassificationBusinessStep extends Wor
         try {
             log.debug(
                     "Starting Working Capital delinquency tag processing for Working Capital Loan with Id [{}], account number [{}], external Id [{}]",
-                    loan.getId(), loan.getAccountNumber(), externalId);
+                    loan.getId(), StringUtil.maskValue(loan.getAccountNumber()), externalId);
 
             delinquencyClassificationService.classifyDelinquency(loan, ThreadLocalContextUtil.getBusinessDate().plusDays(1));
         } catch (RuntimeException re) {
             log.error(
                     "Received exception while processing delinquency tag for Working Capital Loan with Id [{}], account number [{}], external Id [{}]",
-                    loan.getId(), loan.getAccountNumber(), externalId, re);
+                    loan.getId(), StringUtil.maskValue(loan.getAccountNumber()), externalId, re);
 
             throw re;
         }
