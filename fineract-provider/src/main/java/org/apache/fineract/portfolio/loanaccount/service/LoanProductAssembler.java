@@ -47,6 +47,7 @@ import org.apache.fineract.portfolio.loanaccount.domain.LoanCapitalizedIncomeCal
 import org.apache.fineract.portfolio.loanaccount.domain.LoanCapitalizedIncomeStrategy;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanCapitalizedIncomeType;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanChargeOffBehaviour;
+import org.apache.fineract.portfolio.loanaccount.domain.LoanEarlyRepaymentFeeCalculationType;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.AprCalculator;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.LoanScheduleProcessingType;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.LoanScheduleType;
@@ -334,6 +335,13 @@ public class LoanProductAssembler {
         final boolean merchantBuyDownFee = command
                 .booleanPrimitiveValueOfParameterNamed(LoanProductConstants.MERCHANT_BUY_DOWN_FEE_PARAM_NAME);
 
+        final boolean enableEarlyRepaymentFee = command
+                .booleanPrimitiveValueOfParameterNamed(LoanProductConstants.ENABLE_EARLY_REPAYMENT_FEE_PARAM_NAME);
+        final LoanEarlyRepaymentFeeCalculationType earlyRepaymentFeeCalculationType = command.enumValueOfParameterNamed(
+                LoanProductConstants.EARLY_REPAYMENT_FEE_CALCULATION_TYPE_PARAM_NAME, LoanEarlyRepaymentFeeCalculationType.class);
+        final BigDecimal earlyRepaymentFeeAmount = command
+                .bigDecimalValueOfParameterNamed(LoanProductConstants.EARLY_REPAYMENT_FEE_AMOUNT_PARAM_NAME);
+
         return new LoanProduct(fund, loanTransactionProcessingStrategy, loanProductPaymentAllocationRules, loanProductCreditAllocationRules,
                 name, shortName, description, currency, principal, minPrincipal, maxPrincipal, interestRatePerPeriod,
                 minInterestRatePerPeriod, maxInterestRatePerPeriod, interestFrequencyType, annualInterestRate, interestMethod,
@@ -356,7 +364,8 @@ public class LoanProductAssembler {
                 enableAccrualActivityPosting, supportedInterestRefundTypes, chargeOffBehaviour, interestRecognitionOnDisbursementDate,
                 daysInYearCustomStrategy, enableIncomeCapitalization, capitalizedIncomeCalculationType, capitalizedIncomeStrategy,
                 capitalizedIncomeType, enableBuyDownFee, buyDownFeeCalculationType, buyDownFeeStrategy, buyDownFeeIncomeType,
-                merchantBuyDownFee, allowFullTermForTranche);
+                merchantBuyDownFee, allowFullTermForTranche, enableEarlyRepaymentFee, earlyRepaymentFeeCalculationType,
+                earlyRepaymentFeeAmount);
 
     }
 

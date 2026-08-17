@@ -216,6 +216,12 @@ public final class LoanProductsApiResourceSwagger {
         public String buyDownFeeIncomeType;
         @Schema(example = "false")
         public Boolean merchantBuyDownFee;
+        @Schema(example = "false")
+        public Boolean enableEarlyRepaymentFee;
+        @Schema(example = "FLAT", allowableValues = { "FLAT", "PERCENT_OF_OUTSTANDING_PRINCIPAL" })
+        public String earlyRepaymentFeeCalculationType;
+        @Schema(example = "2.5")
+        public BigDecimal earlyRepaymentFeeAmount;
 
         // Interest Recalculation
         @Schema(example = "false")
@@ -724,6 +730,12 @@ public final class LoanProductsApiResourceSwagger {
         public StringEnumOptionData buyDownFeeIncomeType;
         @Schema(example = "false")
         public Boolean merchantBuyDownFee;
+        @Schema(example = "false")
+        public Boolean enableEarlyRepaymentFee;
+        @Schema(example = "FLAT")
+        public StringEnumOptionData earlyRepaymentFeeCalculationType;
+        @Schema(example = "2.5")
+        public BigDecimal earlyRepaymentFeeAmount;
     }
 
     @Schema(description = "GetLoanProductsTemplateResponse")
@@ -1196,6 +1208,13 @@ public final class LoanProductsApiResourceSwagger {
         public List<StringEnumOptionData> buyDownFeeCalculationTypeOptions;
         public List<StringEnumOptionData> buyDownFeeStrategyOptions;
         public List<StringEnumOptionData> buyDownFeeIncomeTypeOptions;
+        @Schema(example = "false")
+        public Boolean enableEarlyRepaymentFee;
+        @Schema(example = "FLAT")
+        public StringEnumOptionData earlyRepaymentFeeCalculationType;
+        @Schema(example = "2.5")
+        public BigDecimal earlyRepaymentFeeAmount;
+        public List<StringEnumOptionData> earlyRepaymentFeeCalculationTypeOptions;
         public List<GetCodeValuesDataResponse> capitalizedIncomeClassificationOptions;
         public List<GetCodeValuesDataResponse> buydownFeeClassificationOptions;
     }
@@ -1553,6 +1572,13 @@ public final class LoanProductsApiResourceSwagger {
         public List<StringEnumOptionData> buyDownFeeCalculationTypeOptions;
         public List<StringEnumOptionData> buyDownFeeStrategyOptions;
         public List<StringEnumOptionData> buyDownFeeIncomeTypeOptions;
+        @Schema(example = "false")
+        public Boolean enableEarlyRepaymentFee;
+        @Schema(example = "FLAT")
+        public StringEnumOptionData earlyRepaymentFeeCalculationType;
+        @Schema(example = "2.5")
+        public BigDecimal earlyRepaymentFeeAmount;
+        public List<StringEnumOptionData> earlyRepaymentFeeCalculationTypeOptions;
         public List<GetCodeValuesDataResponse> capitalizedIncomeClassificationOptions;
         public List<GetCodeValuesDataResponse> buydownFeeClassificationOptions;
         public List<GetClassificationToIncomeAccountMappings> buydownFeeClassificationToIncomeAccountMappings;
@@ -1844,6 +1870,12 @@ public final class LoanProductsApiResourceSwagger {
         public String buyDownFeeIncomeType;
         @Schema(example = "false")
         public Boolean merchantBuyDownFee;
+        @Schema(example = "false")
+        public Boolean enableEarlyRepaymentFee;
+        @Schema(example = "FLAT", allowableValues = { "FLAT", "PERCENT_OF_OUTSTANDING_PRINCIPAL" })
+        public String earlyRepaymentFeeCalculationType;
+        @Schema(example = "2.5")
+        public BigDecimal earlyRepaymentFeeAmount;
     }
 
     public static final class AdvancedPaymentData {

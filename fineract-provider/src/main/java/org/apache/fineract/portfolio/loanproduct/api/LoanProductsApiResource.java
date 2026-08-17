@@ -93,6 +93,7 @@ import org.apache.fineract.portfolio.loanaccount.domain.LoanCapitalizedIncomeCal
 import org.apache.fineract.portfolio.loanaccount.domain.LoanCapitalizedIncomeStrategy;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanCapitalizedIncomeType;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanChargeOffBehaviour;
+import org.apache.fineract.portfolio.loanaccount.domain.LoanEarlyRepaymentFeeCalculationType;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.LoanScheduleProcessingType;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.LoanScheduleType;
 import org.apache.fineract.portfolio.loanproduct.LoanProductConstants;
@@ -481,6 +482,8 @@ public class LoanProductsApiResource {
                 .getValuesAsStringEnumOptionDataList(LoanBuyDownFeeStrategy.class);
         final List<StringEnumOptionData> buyDownFeeIncomeTypeOptions = ApiFacingEnum
                 .getValuesAsStringEnumOptionDataList(LoanBuyDownFeeIncomeType.class);
+        final List<StringEnumOptionData> earlyRepaymentFeeCalculationTypeOptions = ApiFacingEnum
+                .getValuesAsStringEnumOptionDataList(LoanEarlyRepaymentFeeCalculationType.class);
         final List<CodeValueData> writeOffReasonOptions = codeValueReadPlatformService
                 .retrieveCodeValuesByCode(LoanApiConstants.WRITEOFFREASONS);
         final List<CodeValueData> capitalizedIncomeClassificationOptions = codeValueReadPlatformService
@@ -501,7 +504,8 @@ public class LoanProductsApiResource {
                 creditAllocationAllocationTypes, supportedInterestRefundTypesOptions, chargeOffBehaviourOptions, chargeOffReasonOptions,
                 daysInYearCustomStrategyOptions, capitalizedIncomeCalculationTypeOptions, capitalizedIncomeStrategyOptions,
                 capitalizedIncomeTypeOptions, buyDownFeeCalculationTypeOptions, buyDownFeeStrategyOptions, buyDownFeeIncomeTypeOptions,
-                writeOffReasonOptions, capitalizedIncomeClassificationOptions, buydownFeeClassificationOptions);
+                earlyRepaymentFeeCalculationTypeOptions, writeOffReasonOptions, capitalizedIncomeClassificationOptions,
+                buydownFeeClassificationOptions);
     }
 
 }

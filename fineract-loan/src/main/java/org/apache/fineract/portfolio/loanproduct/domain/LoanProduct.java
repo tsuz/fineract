@@ -22,6 +22,8 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -66,6 +68,7 @@ import org.apache.fineract.portfolio.loanaccount.domain.LoanCapitalizedIncomeCal
 import org.apache.fineract.portfolio.loanaccount.domain.LoanCapitalizedIncomeStrategy;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanCapitalizedIncomeType;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanChargeOffBehaviour;
+import org.apache.fineract.portfolio.loanaccount.domain.LoanEarlyRepaymentFeeCalculationType;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.LoanScheduleProcessingType;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.LoanScheduleType;
 import org.apache.fineract.portfolio.loanproduct.LoanProductConstants;
@@ -231,6 +234,16 @@ public class LoanProduct extends AbstractPersistableCustom<Long> {
     @Column(name = "repayment_start_date_type_enum", nullable = false)
     private RepaymentStartDateType repaymentStartDateType;
 
+    @Column(name = "enable_early_repayment_fee", nullable = false)
+    private boolean enableEarlyRepaymentFee = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "early_repayment_fee_calculation_type")
+    private LoanEarlyRepaymentFeeCalculationType earlyRepaymentFeeCalculationType;
+
+    @Column(name = "early_repayment_fee_amount", scale = 6, precision = 19)
+    private BigDecimal earlyRepaymentFeeAmount;
+
     public void updateLoanProductInRelatedClasses() {
         if (this.isInterestRecalculationEnabled()) {
             this.productInterestRecalculationDetails.updateProduct(this);
@@ -288,7 +301,8 @@ public class LoanProduct extends AbstractPersistableCustom<Long> {
             final LoanCapitalizedIncomeStrategy capitalizedIncomeStrategy, final LoanCapitalizedIncomeType capitalizedIncomeType,
             final boolean enableBuyDownFee, final LoanBuyDownFeeCalculationType buyDownFeeCalculationType,
             final LoanBuyDownFeeStrategy buyDownFeeStrategy, final LoanBuyDownFeeIncomeType buyDownFeeIncomeType,
-            final boolean merchantBuyDownFee, final boolean allowFullTermForTranche) {
+            final boolean merchantBuyDownFee, final boolean allowFullTermForTranche, final boolean enableEarlyRepaymentFee,
+            final LoanEarlyRepaymentFeeCalculationType earlyRepaymentFeeCalculationType, final BigDecimal earlyRepaymentFeeAmount) {
         this.fund = fund;
         this.transactionProcessingStrategyCode = transactionProcessingStrategyCode;
 
@@ -392,6 +406,11 @@ public class LoanProduct extends AbstractPersistableCustom<Long> {
         this.repaymentStartDateType = repaymentStartDateType;
 
         this.enableInstallmentLevelDelinquency = enableInstallmentLevelDelinquency;
+
+        this.enableEarlyRepaymentFee = enableEarlyRepaymentFee;
+        this.earlyRepaymentFeeCalculationType = earlyRepaymentFeeCalculationType;
+        this.earlyRepaymentFeeAmount = earlyRepaymentFeeAmount;
+
         validateLoanProductPreSave();
     }
 
