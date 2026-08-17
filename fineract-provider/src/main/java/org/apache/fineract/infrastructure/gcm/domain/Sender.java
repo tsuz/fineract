@@ -482,7 +482,7 @@ public class Sender {
 
     private Map<String, Object> makeGcmHttpRequest(Map<Object, Object> jsonRequest) throws InvalidRequestException {
         String requestBody = new Gson().toJson(jsonRequest);
-        LOG.debug("JSON request: " + requestBody);
+        LOG.debug("Sending GCM push request");
         HttpURLConnection conn;
         int status;
         try {
@@ -496,7 +496,7 @@ public class Sender {
         if (status != 200) {
             try {
                 responseBody = getAndClose(conn.getErrorStream());
-                LOG.debug("JSON error response: {}", responseBody);
+                LOG.debug("GCM request failed with status {}", status);
             } catch (IOException e) {
                 // ignore the exception since it will thrown an
                 // InvalidRequestException
@@ -512,7 +512,7 @@ public class Sender {
             LOG.warn("IOException reading response", e);
             return null;
         }
-        LOG.debug("JSON response: {}", responseBody);
+        LOG.debug("Received GCM response with status {}", status);
         Map<String, Object> map = new HashMap<>();
         map.put("responseBody", responseBody);
         map.put("status", status);
